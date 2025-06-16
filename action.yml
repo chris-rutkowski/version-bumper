@@ -1,0 +1,33 @@
+name: "Version Bumper"
+description: "Increments version number for specific project"
+author: "Chris Rutkowski"
+inputs:
+  project:
+    description: "Project name"
+    required: true
+  repository:
+    description: "Repository to store version data"
+    
+runs:
+  using: "composite"
+
+  steps:
+    - name: Clone version store and bump number
+      run: |
+        git clone https://@github.com/${{ inputs.repository }}.git repository
+        cd repository
+        FILE="${{ inputs.project }}.txt"
+        if [ -f "$FILE" ]; then
+          BUILD_NUMBER=$(cat $FILE)
+          BUILD_NUMBER=$((BUILD_NUMBER + 1))
+        else
+          BUILD_NUMBER=1
+        fi
+        echo $BUILD_NUMBER > $FILE
+        # git config user.name github-actions
+        # git config user.email github-actions@github.com
+        git add $FILE
+        git commit -m "chore: bump ${{ inputs.project_name }} to $BUILD_NUMBER"
+        git push
+        echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+      id: set-output
