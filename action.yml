@@ -10,12 +10,17 @@ inputs:
   token:
     description: "GitHub token"
     required: true
-    
+
+outputs:
+  build_number:
+    description: "The incremented build number"
+    value: ${{ steps.set-output.outputs.build_number }}
+
 runs:
   using: "composite"
-
   steps:
     - name: Clone version store and bump number
+      id: set-output  # or rename to bump
       run: |
         git clone https://${{ inputs.token }}@github.com/${{ inputs.repository }}.git repository
         cd repository
@@ -28,9 +33,7 @@ runs:
         fi
         echo $BUILD_NUMBER > $FILE
         git add $FILE
-        git commit -m "bump ${{ inputs.project_name }} to $BUILD_NUMBER"
+        git commit -m "bump ${{ inputs.project }} to $BUILD_NUMBER"
         git push
         echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
-      id: set-output
       shell: bash
-
