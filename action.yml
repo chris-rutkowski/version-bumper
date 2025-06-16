@@ -27,12 +27,10 @@ runs:
           BUILD_NUMBER=1
         fi
         echo $BUILD_NUMBER > $FILE
-        # git config user.name github-actions
-        # git config user.email github-actions@github.com
         git add $FILE
-        git commit -m "chore: bump ${{ inputs.project_name }} to $BUILD_NUMBER"
+        git commit -m "bump ${{ inputs.project_name }} to $BUILD_NUMBER"
         git push
-        echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+        echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
       id: set-output
       shell: bash
 
