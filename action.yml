@@ -31,3 +31,5 @@ runs:
         git push
         echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_OUTPUT
       id: set-output
+      shell: bash
+
