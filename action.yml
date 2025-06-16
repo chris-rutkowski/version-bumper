@@ -7,6 +7,9 @@ inputs:
     required: true
   repository:
     description: "Repository to store version data"
+  token:
+    description: "GitHub token"
+    required: true
     
 runs:
   using: "composite"
@@ -14,7 +17,7 @@ runs:
   steps:
     - name: Clone version store and bump number
       run: |
-        git clone https://@github.com/${{ inputs.repository }}.git repository
+        git clone https://${{ inputs.token }}@github.com/${{ inputs.repository }}.git repository
         cd repository
         FILE="${{ inputs.project }}.txt"
         if [ -f "$FILE" ]; then
