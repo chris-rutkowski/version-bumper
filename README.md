@@ -37,7 +37,7 @@ You can use your Personal Access Token or other token capable of accessing and w
           repository: "MyOrganisation/version-bumper-storage"
           token: ${{ secrets.GITHUB_PAT }}
 
-- name: Use new build number
+      - name: Use new build number
         run: echo "Build number: ${{ steps.version_bumper.outputs.build_number }}"
 ```
 
