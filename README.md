@@ -1,7 +1,7 @@
 
-# Version Bumper
+# Project Version Bumper
 
-**Version Bumper** is a lightweight GitHub Action that automatically increments a build number for a given project (or project variant).
+**Project Version Bumper** is a lightweight GitHub Action that automatically increments a build number for a given project (or project variant).
 
 This is useful for maintaining auto-incremented build numbers, synchronised versioning across projects, or tracking deploy counts.
 

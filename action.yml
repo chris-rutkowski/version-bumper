@@ -1,4 +1,4 @@
-name: "Version Bumper"
+name: "Project Version Bumper"
 description: "Increments version number for specific project"
 author: "Chris Rutkowski"
 inputs:
