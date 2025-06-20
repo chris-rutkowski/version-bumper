@@ -30,6 +30,7 @@ runs:
 
         if ! git clone https://x-access-token:${TOKEN}@github.com/${REPOSITORY}.git repository; then
           echo "❌ Failed to clone repository ${REPOSITORY}"
+          echo "🔐 Token begins with: ${TOKEN:0:8}"
           exit 1
         fi
 
