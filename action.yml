@@ -25,7 +25,12 @@ runs:
       run: |
         # git config user.name "version-bumper[bot]"
         # git config user.email "version-bumper[bot]@users.noreply.github.com"
-        git clone https://${{ inputs.token }}@github.com/${{ inputs.repository }}.git repository
+
+        if ! git clone https://x-access-token:${{ inputs.token }}@github.com/${{ inputs.repository }}.git repository; then
+          echo "❌ Failed to clone repository ${inputs.repository}"
+          exit 1
+        fi
+
         cd repository
         FILE="${{ inputs.project }}.txt"
         if [ -f "$FILE" ]; then
