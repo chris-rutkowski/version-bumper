@@ -23,11 +23,20 @@ runs:
     - name: Clone version store and bump number
       id: set-output  # or rename to bump
       run: |
+        set -e
+
         # git config user.name "version-bumper[bot]"
         # git config user.email "version-bumper[bot]@users.noreply.github.com"
-        git clone https://${{ inputs.token }}@github.com/${{ inputs.repository }}.git repository
+
+        if ! git clone https://x-access-token:${TOKEN}@github.com/${REPOSITORY}.git repository; then
+          echo "❌ Failed to clone repository ${REPOSITORY}"
+          echo "🔐 Token begins with: ${TOKEN:0:8}"
+          exit 1
+        fi
+
         cd repository
-        FILE="${{ inputs.project }}.txt"
+        FILE="${PROJECT}.txt"
+    
         if [ -f "$FILE" ]; then
           BUILD_NUMBER=$(cat $FILE)
           BUILD_NUMBER=$((BUILD_NUMBER + 1))
@@ -36,7 +45,12 @@ runs:
         fi
         echo $BUILD_NUMBER > $FILE
         git add $FILE
-        git commit -m "bump ${{ inputs.project }} to $BUILD_NUMBER"
+        git commit -m "bump ${PROJECT} to $BUILD_NUMBER"
         git push
+
         echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
       shell: bash
+      env:
+        TOKEN: ${{ inputs.token }}
+        REPOSITORY: ${{ inputs.repository }}
+        PROJECT: ${{ inputs.project }}
