@@ -28,13 +28,13 @@ runs:
         # git config user.name "version-bumper[bot]"
         # git config user.email "version-bumper[bot]@users.noreply.github.com"
 
-        if ! git clone https://x-access-token:${TOKEN}@github.com/${REPOSITORY}.git repository; then
-          echo "❌ Failed to clone repository ${REPOSITORY}"
+        if ! git clone https://x-access-token:${TOKEN}@github.com/${REPOSITORY}.git versions_repository; then
+          echo "❌ Failed to clone ${REPOSITORY}"
           echo "🔐 Token begins with: ${TOKEN:0:8}"
           exit 1
         fi
 
-        cd repository
+        cd versions_repository
         FILE="${PROJECT}.txt"
     
         if [ -f "$FILE" ]; then
@@ -49,6 +49,9 @@ runs:
         git push
 
         echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+
+        # in case multiple times action is used in the workflow
+        rm -rf versions_repository
       shell: bash
       env:
         TOKEN: ${{ inputs.token }}
