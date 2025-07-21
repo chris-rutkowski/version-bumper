@@ -51,6 +51,7 @@ runs:
         echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
 
         # in case multiple times action is used in the workflow
+        cd ..
         rm -rf versions_repository
       shell: bash
       env:
