@@ -37,8 +37,11 @@ You can use your Personal Access Token or other token capable of accessing and w
           repository: "MyOrganisation/version-bumper-storage"
           token: ${{ secrets.GITHUB_PAT }}
 
-      - name: Use new build number
-        run: echo "Build number: ${{ steps.version_bumper.outputs.value }}"
+      - name: Fastlane
+        run: |
+          fastlane beta build_number:${{ steps.version_bumper.outputs.value }}
+        env:
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
 ```
 
 ### 4. **Using readonly mode (optional)**
