@@ -60,16 +60,43 @@ You can use the action in readonly mode to retrieve the current build number wit
         run: echo "Current build number: ${{ steps.version_bumper.outputs.build_number }}"
 ```
 
+### 5. **Using prefix for version-like numbering (optional)**
+
+You can add a prefix to create version-like numbering:
+
+```yaml
+    steps:
+      - name: Bump version
+        id: version_bumper
+        uses: chris-rutkowski/version-bumper@main
+        with:
+          project: "my-app"
+          repository: "MyOrganisation/version-bumper-storage"
+          token: ${{ secrets.GITHUB_PAT }}
+          prefix: "4.17."
+
+      - name: Use versioned build number
+        run: echo "Version: ${{ steps.version_bumper.outputs.build_number }}"
+        # This will output: Version: 4.17.1, 4.17.2, 4.17.3...
+```
+
+**Examples of prefix usage:**
+- `prefix: "1."` → outputs: `1.1`, `1.2`, `1.3`...
+- `prefix: "5.1."` → outputs: `5.1.1`, `5.1.2`, `5.1.3`...
+- `prefix: "v"` → outputs: `v1`, `v2`, `v3`...
+- No prefix (default) → outputs: `1`, `2`, `3`...
+
 ---
 
 ## 📝 Inputs
 
-| Input        | Description                                                   | Required | Default |
-| ------------ | ------------------------------------------------------------- | -------- | ------- |
-| `project`    | Project name (used as filename for version storage)           | Yes      | -       |
-| `repository` | Repository to store version data (format: "owner/repo")       | Yes      | -       |
-| `token`      | GitHub token with write access to the repository              | Yes      | -       |
-| `readonly`   | If true, returns current value without incrementing or saving | No       | `false` |
+| Input        | Description                                                                   | Required | Default      |
+| ------------ | ----------------------------------------------------------------------------- | -------- | ------------ |
+| `project`    | Project name (used as filename for version storage)                           | Yes      | -            |
+| `repository` | Repository to store version data (format: "owner/repo")                       | Yes      | -            |
+| `token`      | GitHub token with write access to the repository                              | Yes      | -            |
+| `readonly`   | If true, returns current value without incrementing or saving                 | No       | `false`      |
+| `prefix`     | Prefix to prepend to the build number (e.g., "1." for version-like numbering) | No       | `''` (empty) |
 
 ## 📤 Outputs
 
