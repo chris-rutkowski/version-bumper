@@ -36,13 +36,14 @@ runs:
         # git config user.name "version-bumper[bot]"
         # git config user.email "version-bumper[bot]@users.noreply.github.com"
 
-        if ! git clone https://x-access-token:${TOKEN}@github.com/${REPOSITORY}.git versions_repository; then
+        TEMP_DIR=$(mktemp -d -t version_bumper-XXXXXX)
+        if ! git clone https://x-access-token:${TOKEN}@github.com/${REPOSITORY}.git "${TEMP_DIR}"; then
           echo "❌ Failed to clone ${REPOSITORY}"
           echo "🔐 Token begins with: ${TOKEN:0:8}"
           exit 1
         fi
 
-        cd versions_repository
+        cd "${TEMP_DIR}"
         FILE="${PROJECT}.txt"
 
         if [ -f "$FILE" ]; then
@@ -53,7 +54,6 @@ runs:
 
         if [ "$READONLY" == "true" ]; then
           echo "value=${PREFIX}${BUILD_NUMBER}" >> $GITHUB_OUTPUT
-          rm -rf ../versions_repository
           exit 0
         fi
 
@@ -64,10 +64,6 @@ runs:
         git push
 
         echo "value=${PREFIX}${BUILD_NUMBER}" >> $GITHUB_OUTPUT
-
-        # clean up in case multiple times action is used in the workflow
-        # eg. to change both version and build number
-        rm -rf ../versions_repository
       shell: bash
       env:
         TOKEN: ${{ inputs.token }}
