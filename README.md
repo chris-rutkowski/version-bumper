@@ -41,6 +41,44 @@ You can use your Personal Access Token or other token capable of accessing and w
         run: echo "Build number: ${{ steps.version_bumper.outputs.build_number }}"
 ```
 
+### 4. **Using readonly mode (optional)**
+
+You can use the action in readonly mode to retrieve the current build number without incrementing it:
+
+```yaml
+    steps:
+      - name: Get current version
+        id: version_bumper
+        uses: chris-rutkowski/version-bumper@main
+        with:
+          project: "my-app"
+          repository: "MyOrganisation/version-bumper-storage"
+          token: ${{ secrets.GITHUB_PAT }}
+          readonly: true
+
+      - name: Use current build number
+        run: echo "Current build number: ${{ steps.version_bumper.outputs.build_number }}"
+```
+
+---
+
+## 📝 Inputs
+
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `project` | Project name (used as filename for version storage) | Yes | - |
+| `repository` | Repository to store version data (format: "owner/repo") | Yes | - |
+| `token` | GitHub token with write access to the repository | Yes | - |
+| `readonly` | If true, returns current value without incrementing or saving | No | `false` |
+
+## 📤 Outputs
+
+| Output | Description |
+|--------|-------------|
+| `build_number` | The build number (incremented if readonly=false, current if readonly=true) |
+
+---
+
 ## 🧾 Setting initial versions
 
 After running this workflow for the first time, the version storage repository will contain a file named after your `project` input, such as `my-app.txt`. This file holds a single number that represents the current build version and is **incremented by 1** every time the workflow runs. You can manually edit this file at any time to set an initial version, reset the counter (by deleting a file), or jump to any specific version number as needed, giving you full control over versioning across your environments or deployment flows.
