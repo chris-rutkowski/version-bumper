@@ -55,7 +55,7 @@ You can use the action in readonly mode to retrieve the current value without in
       # use ${{ steps.version.outputs.value }}
 ```
 
-### 5. **Using prefix for version-like numbering (optional)**
+### 5. **Using prefix and suffix for version-like numbering (optional)**
 
 You can add a prefix to create version-like numbering:
 
@@ -69,9 +69,13 @@ You can add a prefix to create version-like numbering:
           repository: "MyOrganisation/version-bumper-storage"
           token: ${{ secrets.GITHUB_PAT }}
           prefix: "4.17."
+          suffix: "-alpha"
+
 
       # use ${{ steps.version.outputs.value }}
 ```
+
+This will output a version like `4.17.1-alpha`, incrementing the `.1` each time the action runs.
 
 ### 6. **Combining version and build number**
 
@@ -87,6 +91,7 @@ You can get the current version in readonly mode and increment a separate build 
           repository: "MyOrganisation/version-bumper-storage"
           token: ${{ secrets.GITHUB_PAT }}
           prefix: "4.17."
+          suffix: "-alpha"
           readonly: true
 
       - name: Bump build number
@@ -99,12 +104,6 @@ You can get the current version in readonly mode and increment a separate build 
 
       # use ${{ steps.version.outputs.value }} and ${{ steps.build_number.outputs.value }}
 ```
-
-**Examples of prefix usage:**
-- `prefix: "1."` → outputs: `1.1`, `1.2`, `1.3`...
-- `prefix: "5.1."` → outputs: `5.1.1`, `5.1.2`, `5.1.3`...
-- `prefix: "v"` → outputs: `v1`, `v2`, `v3`...
-- No prefix (default) → outputs: `1`, `2`, `3`...
 
 ---
 

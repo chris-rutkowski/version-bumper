@@ -19,10 +19,14 @@ inputs:
     description: "Prefix to prepend to the output value"
     required: false
     default: ''
+  suffix:
+    description: "Suffix to append to the output value"
+    required: false
+    default: ''
 
 outputs:
   value:
-    description: "The version value with optional prefix (incremented unless readonly=true)"
+    description: "The version value with optional prefix/suffix"
     value: ${{ steps.set-output.outputs.value }}
 
 runs:
@@ -53,7 +57,7 @@ runs:
         fi
 
         if [ "$READONLY" == "true" ]; then
-          echo "value=${PREFIX}${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          echo "value=${PREFIX}${BUILD_NUMBER}${SUFFIX}" >> $GITHUB_OUTPUT
           exit 0
         fi
 
@@ -63,7 +67,7 @@ runs:
         git commit -m "bump ${PROJECT} to $BUILD_NUMBER"
         git push
 
-        echo "value=${PREFIX}${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+        echo "value=${PREFIX}${BUILD_NUMBER}${SUFFIX}" >> $GITHUB_OUTPUT
       shell: bash
       env:
         TOKEN: ${{ inputs.token }}
@@ -71,3 +75,4 @@ runs:
         PROJECT: ${{ inputs.project }}
         READONLY: ${{ inputs.readonly }}
         PREFIX: ${{ inputs.prefix }}
+        SUFFIX: ${{ inputs.suffix }}
