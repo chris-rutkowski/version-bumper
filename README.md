@@ -1,66 +1,59 @@
 
 # Project Version Bumper
 
-**Project Version Bumper** is a lightweight GitHub Action that automatically increments a build number for a given project (or project variant).
-
-This is useful for maintaining auto-incremented build numbers, synchronised versioning across projects, or tracking deploy counts.
-
-It works by cloning a designated version repository, updating a numeric counter (e.g., `42` → `43`), and committing the updated value back.
+**Project Version Bumper** is a lightweight GitHub Action that automatically increments a project version or its build number for a given project (or project variant).
 
 ---
 
 ## 🚀 Features
-- Increments and persists a build number for any project.
-- Stores version data in a separate GitHub repository.
-- Outputs the new build number for use in subsequent steps (e.g. tagging, build, release).
+- Increments and persists a version or build number for any project.
+- Stores data in a separate GitHub repository.
+- Outputs the value for use in subsequent steps (e.g. tagging, build, release).
 
 ---
 
 ## 🛠️ Usage
 
-### 1. **Prepare a version storage repository**
+### 1. **Prepare a storage repository**
 
 Create a separate repository to store version files, e.g. `MyOrganisation/version-bumper-storage`.
 
 ### 2. **Prepare a GitHub Token with write access**
+
 You can use your Personal Access Token or other token capable of accessing and writing the storage repository.
 
-### 3. **Add two steps to your GitHub Action workflow**
+### 3. **Add step to your GitHub Action workflow**
 
 ```yaml
     steps:
-      - name: Bump version
-        id: version_bumper
+      - name: Bump build number
+        id: build_number
         uses: chris-rutkowski/version-bumper@main
         with:
-          project: "my-app" # or "my-app-test" - filesafe name
+          project: "my-app-build-number"
           repository: "MyOrganisation/version-bumper-storage"
           token: ${{ secrets.GITHUB_PAT }}
 
-      - name: Fastlane
-        run: |
-          fastlane beta build_number:${{ steps.version_bumper.outputs.value }}
-        env:
-          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+      - name: Fastlane (example)
+        run: fastlane beta build_number:${{ steps.build_number.outputs.value }}
 ```
 
 ### 4. **Using readonly mode (optional)**
 
-You can use the action in readonly mode to retrieve the current build number without incrementing it:
+You can use the action in readonly mode to retrieve the current value without incrementing it:
 
 ```yaml
     steps:
       - name: Get current version
-        id: version_bumper
+        id: version
         uses: chris-rutkowski/version-bumper@main
         with:
-          project: "my-app"
+          project: "my-app-version"
           repository: "MyOrganisation/version-bumper-storage"
           token: ${{ secrets.GITHUB_PAT }}
           readonly: true
-
-      - name: Use current build number
-        run: echo "Current build number: ${{ steps.version_bumper.outputs.build_number }}"
+      
+      # use ${{ steps.version.outputs.value }}
 ```
 
 ### 5. **Using prefix for version-like numbering (optional)**
@@ -70,17 +63,42 @@ You can add a prefix to create version-like numbering:
 ```yaml
     steps:
       - name: Bump version
-        id: version_bumper
+        id: version
         uses: chris-rutkowski/version-bumper@main
         with:
-          project: "my-app"
+          project: "my-app-version"
           repository: "MyOrganisation/version-bumper-storage"
           token: ${{ secrets.GITHUB_PAT }}
           prefix: "4.17."
 
-      - name: Use versioned build number
-        run: echo "Version: ${{ steps.version_bumper.outputs.value }}"
-        # This will output: Version: 4.17.1, 4.17.2, 4.17.3...
+      # use ${{ steps.version.outputs.value }}
+```
+
+### 5. **Get current version, but increment build number**
+
+You can add a prefix to create version-like numbering:
+
+```yaml
+    steps:
+      - name: Get current version
+        id: version
+        uses: chris-rutkowski/version-bumper@main
+        with:
+          project: "my-app-version"
+          repository: "MyOrganisation/version-bumper-storage"
+          token: ${{ secrets.GITHUB_PAT }}
+          prefix: "4.17."
+          readonly: true
+
+      - name: Bump build number
+        id: build_number
+        uses: chris-rutkowski/version-bumper@main
+        with:
+          project: "my-app-build-number"
+          repository: "MyOrganisation/version-bumper-storage"
+          token: ${{ secrets.GITHUB_PAT }}
+
+      # use ${{ steps.version.outputs.value }} and ${{ steps.build_number.outputs.value }}
 ```
 
 **Examples of prefix usage:**
