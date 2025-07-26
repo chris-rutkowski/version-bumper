@@ -38,7 +38,7 @@ You can use your Personal Access Token or other token capable of accessing and w
           token: ${{ secrets.GITHUB_PAT }}
 
       - name: Use new build number
-        run: echo "Build number: ${{ steps.version_bumper.outputs.build_number }}"
+        run: echo "Build number: ${{ steps.version_bumper.outputs.value }}"
 ```
 
 ### 4. **Using readonly mode (optional)**
@@ -76,7 +76,7 @@ You can add a prefix to create version-like numbering:
           prefix: "4.17."
 
       - name: Use versioned build number
-        run: echo "Version: ${{ steps.version_bumper.outputs.build_number }}"
+        run: echo "Version: ${{ steps.version_bumper.outputs.value }}"
         # This will output: Version: 4.17.1, 4.17.2, 4.17.3...
 ```
 
@@ -100,9 +100,9 @@ You can add a prefix to create version-like numbering:
 
 ## 📤 Outputs
 
-| Output         | Description                                                                |
-| -------------- | -------------------------------------------------------------------------- |
-| `build_number` | The build number (incremented if readonly=false, current if readonly=true) |
+| Output  | Description                                                               |
+| ------- | ------------------------------------------------------------------------- |
+| `value` | The version value with optional prefix (incremented unless readonly=true) |
 
 ---
 
