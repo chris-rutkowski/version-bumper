@@ -1,4 +1,3 @@
-
 # Project Version Bumper
 
 **Project Version Bumper** is a lightweight GitHub Action that automatically increments a project version or its build number for a given project (or project variant).
@@ -74,9 +73,9 @@ You can add a prefix to create version-like numbering:
       # use ${{ steps.version.outputs.value }}
 ```
 
-### 5. **Get current version, but increment build number**
+### 6. **Combining version and build number**
 
-You can add a prefix to create version-like numbering:
+You can get the current version in readonly mode and increment a separate build number:
 
 ```yaml
     steps:
