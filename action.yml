@@ -53,6 +53,7 @@ runs:
 
         if [ "$READONLY" == "true" ]; then
           echo "value=${PREFIX}${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          rm -rf ../versions_repository
           exit 0
         fi
 
@@ -66,8 +67,7 @@ runs:
 
         # clean up in case multiple times action is used in the workflow
         # eg. to change both version and build number
-        cd ..
-        rm -rf versions_repository
+        rm -rf ../versions_repository
       shell: bash
       env:
         TOKEN: ${{ inputs.token }}
