@@ -37,13 +37,13 @@ runs:
       run: |
         set -e
 
-        # Set git identity only if not already configured
-        if ! git config user.name >/dev/null 2>&1; then
-          git config user.name "version-bumper[bot]"
+        # Set git identity only if not already configured globally
+        if ! git config --global user.name >/dev/null 2>&1; then
+          git config --global user.name "version-bumper[bot]"
         fi
 
-        if ! git config user.email >/dev/null 2>&1; then
-          git config user.email "version-bumper[bot]@users.noreply.github.com"
+        if ! git config --global user.email >/dev/null 2>&1; then
+          git config --global user.email "version-bumper[bot]@users.noreply.github.com"
         fi
 
         TEMP_DIR=$(mktemp -d -t version_bumper-XXXXXX)
