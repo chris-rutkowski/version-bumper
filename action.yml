@@ -1,5 +1,5 @@
 name: "Project Version Bumper"
-description: "Increments version number for specific project"
+description: "Increments version or build number for a specific project"
 author: "Chris Rutkowski"
 inputs:
   project:
@@ -11,50 +11,74 @@ inputs:
   token:
     description: "GitHub token"
     required: true
+  readonly:
+    description: "Returns current build number without incrementing (true/false)"
+    required: false
+    default: 'false'
+  prefix:
+    description: "Prefix to prepend to the output value"
+    required: false
+    default: ''
+  suffix:
+    description: "Suffix to append to the output value"
+    required: false
+    default: ''
 
 outputs:
-  build_number:
-    description: "The incremented build number"
-    value: ${{ steps.set-output.outputs.build_number }}
+  value:
+    description: "The version value with optional prefix/suffix"
+    value: ${{ steps.set-output.outputs.value }}
 
 runs:
   using: "composite"
   steps:
     - name: Clone version store and bump number
-      id: set-output  # or rename to bump
+      id: set-output
       run: |
         set -e
 
-        # git config user.name "version-bumper[bot]"
-        # git config user.email "version-bumper[bot]@users.noreply.github.com"
+        # Set git identity only if not already configured globally
+        if ! git config --global user.name >/dev/null 2>&1; then
+          git config --global user.name "version-bumper[bot]"
+        fi
 
-        if ! git clone https://x-access-token:${TOKEN}@github.com/${REPOSITORY}.git versions_repository; then
+        if ! git config --global user.email >/dev/null 2>&1; then
+          git config --global user.email "version-bumper[bot]@users.noreply.github.com"
+        fi
+
+        TEMP_DIR=$(mktemp -d -t version_bumper-XXXXXX)
+        if ! git clone https://x-access-token:${TOKEN}@github.com/${REPOSITORY}.git "${TEMP_DIR}"; then
           echo "❌ Failed to clone ${REPOSITORY}"
           echo "🔐 Token begins with: ${TOKEN:0:8}"
           exit 1
         fi
 
-        cd versions_repository
+        cd "${TEMP_DIR}"
         FILE="${PROJECT}.txt"
-    
+
         if [ -f "$FILE" ]; then
           BUILD_NUMBER=$(cat $FILE)
-          BUILD_NUMBER=$((BUILD_NUMBER + 1))
         else
           BUILD_NUMBER=1
         fi
+
+        if [ "$READONLY" == "true" ]; then
+          echo "value=${PREFIX}${BUILD_NUMBER}${SUFFIX}" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        BUILD_NUMBER=$((BUILD_NUMBER + 1))
         echo $BUILD_NUMBER > $FILE
         git add $FILE
         git commit -m "bump ${PROJECT} to $BUILD_NUMBER"
         git push
 
-        echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
-
-        # in case multiple times action is used in the workflow
-        cd ..
-        rm -rf versions_repository
+        echo "value=${PREFIX}${BUILD_NUMBER}${SUFFIX}" >> $GITHUB_OUTPUT
       shell: bash
       env:
         TOKEN: ${{ inputs.token }}
         REPOSITORY: ${{ inputs.repository }}
         PROJECT: ${{ inputs.project }}
+        READONLY: ${{ inputs.readonly }}
+        PREFIX: ${{ inputs.prefix }}
+        SUFFIX: ${{ inputs.suffix }}
